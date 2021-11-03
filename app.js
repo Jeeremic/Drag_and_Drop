@@ -1,75 +1,32 @@
-// const listItems = document.querySelectorAll('.list-item');
-// const lists = document.querySelectorAll('.list');
-
-// let draggedItem = null;
-// for (let i = 0; i < listItems.length; i++) {
-//     const item = listItems[i];
-//     item.addEventListener('dragstart', function () {
-//         draggedItem = item;
-//         setTimeout(function() {
-//             item.style.display = 'none';
-//         }, 0);
-//     });
-
-//     item.addEventListener('dragend', function () {
-//         setTimeout(function () {
-//             draggedItem.style.display = 'block';
-//             draggedItem = null;
-//         }, 0);
-//     }); 
-
-//     for (let j = 0; j < lists.length; j++) {
-//         const list = lists[j];
-//         list.addEventListener('dragover', function (e) {
-//             e.preventDefault();
-//         });
-//         list.addEventListener('dragenter', function (e) {
-//             e.preventDefault();
-//             this.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
-//         })
-//         list.addEventListener('dragleave', function (e) {
-//             this.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-//         })
-//         list.addEventListener('drop', function (e) {
-//             this.append(draggedItem);
-//             this.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-//         });
-//     }
-// }
-
-
-
-
-
-
 const listItems = document.querySelectorAll('.list-item');
-const lists = document.querySelectorAll('.list');
+const listContainer = document.querySelectorAll('.list-container');
 
-listItems.forEach(draggable => {
-    draggable.addEventListener('dragstart', () => {
-        draggable.classList.add('dragging');
+listItems.forEach(item => {
+    item.addEventListener('dragstart', () => {
+      item.classList.add('dragging');
     });
-    draggable.addEventListener('dragend', () => {
-        draggable.classList.remove('dragging');
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging'); 
     });
 });
 
-lists.forEach(list => {
-    list.addEventListener('dragover', e => {
+listContainer.forEach(list => {
+  list.addEventListener('dragover', e => {
       e.preventDefault()
-      const afterElement = getDragAfterElement(container, e.clientY)
-      const draggable = document.querySelector('.dragging')
+      console.log(list);
+      const afterElement = getDragAfterElement(list, e.clientY);
+      const draggable = document.querySelector('.dragging');
       if (afterElement == null) {
-        list.appendChild(draggable)
+        list.appendChild(draggable);
       } else {
+        console.log(false)
         list.insertBefore(draggable, afterElement)
       }
-    })
-  })
-  
+    });
+  });
 
-  function getDragAfterElement(list, y) {
-    const draggableElements = [...list.querySelectorAll('.draggable:not(.dragging)')]
+  function getDragAfterElement(list , y) {
+    const draggableElements = [...list.querySelectorAll('.list-item:not(.dragging)')]
   
     return draggableElements.reduce((closest, child) => {
       const box = child.getBoundingClientRect()
@@ -77,73 +34,35 @@ lists.forEach(list => {
       if (offset < 0 && offset > closest.offset) {
         return { offset: offset, element: child }
       } else {
-        return closest
+        return closest;
       }
-    }, { offset: Number.NEGATIVE_INFINITY }).element
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
   }
 
+const addBtn = document.querySelector('.addItem');
+const saveBtn = document.querySelector('.saveItem');
+const text = document.querySelector('.text');
 
+addBtn.addEventListener('click', () => {
+  text.style.display = "block";
+  saveBtn.style.display = "block";
+  addBtn.style.visible = "hidden";
+});
 
+saveBtn.addEventListener('click', addNewItem);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const btnAdd = document.querySelectorAll('.addItem');
-// const btnSave = document.querySelectorAll('.saveItem');
-// const list = document.querySelector('.list');
-
-// btnAdd.forEach( btn => {
-//     btn.addEventListener('click', () => {
-//         console.log('add');
-//         btnSave.classList.add('visibleButton');
-//     })
-// })
-
-
-
-// // btnAdd.addEventListener('click', newItem);
-
-// // function newItem() {
-// //     console.log('add');
-// //     list.style.display = "none";
-// // }
-
-
-
-// // btnAdd.onclick = function(e) {
-// //     btnSave.style.display = "block";
-// //     e.preventDefault();
-// //   }
-
-// //   <div id="myModal" class="modal">
-// // let modal = document.querySelector('.modal');
+function addNewItem () {
+  const input = document.querySelector('.text');
+  const list = this.parentElement.previousElementSibling;
+  if (input.value != ''){
+      const newItem = document.createElement('div');
+      newItem.classList.add('list-item');
+      newItem.setAttribute('draggable', "true");
+      newItem.innerHTML = input.value;
+      list.appendChild(newItem);
+      input.value = '';
+  }
+  text.style.display = "none";
+  saveBtn.style.display = "none";
+  addBtn.style.visible = "hidden";
+}
